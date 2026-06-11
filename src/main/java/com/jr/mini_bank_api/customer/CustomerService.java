@@ -1,11 +1,8 @@
 package com.jr.mini_bank_api.customer;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import com.jr.mini_bank_api.exception.ResourceNotFoundException;
 
@@ -25,12 +22,7 @@ public class CustomerService {
         return repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer", id));
     }
-
-    @PostMapping
-    public List<Customer> list() {
-        return repo.findAll();
-    }
-
+    
     public Customer update(Long id, Customer updated) {
         Customer existing = get(id);
         existing.setName(updated.getName());
