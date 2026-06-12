@@ -1,11 +1,13 @@
 package com.jr.mini_bank_api.customer;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,20 +18,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/customers")
 public class CustomerController {
-   private final CustomerService service;
-   
-   public CustomerController(CustomerService service) {
-       this.service = service;
-   }
+    private final CustomerService service;
+
+    public CustomerController(CustomerService service) {
+        this.service = service;
+    }
 
     @PostMapping
     public Customer create(@RequestBody Customer customer) {
         return service.create(customer);
     }
-    
+
     @GetMapping("/{id}")
     public Customer get(@PathVariable Long id) {
-       return service.get(id);
+        return service.get(id);
     }
 
     @PutMapping("/{id}")
@@ -41,9 +43,23 @@ public class CustomerController {
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
-    
+
     @GetMapping
-    public Page<Customer> list (Pageable pageable) {
-       return service.list(pageable);
+    public Page<Customer> list(Pageable pageable) {
+        return service.list(pageable);
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public Customer deactivate(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+        String reason = body.get("reason");
+        return service.deactivate(id, reason);
+    }
+
+    @PatchMapping("/{id}/activate")
+    public Customer activate(
+            @PathVariable Long id) {
+        return service.activate(id);
     }
 }

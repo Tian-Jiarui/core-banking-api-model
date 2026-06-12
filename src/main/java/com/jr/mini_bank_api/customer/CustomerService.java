@@ -1,8 +1,11 @@
 package com.jr.mini_bank_api.customer;
 
+import java.time.Instant;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.jr.mini_bank_api.exception.ResourceNotFoundException;
 
@@ -36,5 +39,30 @@ public class CustomerService {
     
     public Page<Customer> list(Pageable pageable) {
         return repo.findAll(pageable);
+    }
+
+    @Transactional
+    public Customer deactivate(Long id, String reason) {
+        // Step 1: Load the existing customer (throws if not found)
+        Customer customer = get(id);
+
+        // Step 2: Modify fields
+        customer.setStatus(CustomerStatus.INACTIVE);
+        customer.setStatusChangedAt(Instant.now());
+        customer.setStatusChangeReason(reason);
+
+        // Step 3: Save the updated record
+        return repo.save(customer);
+    }
+    
+    @Transactional
+    public Customer activate(Long id) {
+        Customer customer = get(id);
+
+        customer.setStatus(CustomerStatus.ACTIVE);
+        customer.setStatusChangedAt(Instant.now());
+        customer.setStatusChangeReason(null);
+
+        return repo.save(customer);
     }
 }
